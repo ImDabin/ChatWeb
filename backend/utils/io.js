@@ -10,6 +10,11 @@ module.exports=function(io){
             //유저정보 저장
             try {
                 const user = await userController.saveUser(userName, socket.id);
+                const welcomeMessage = {
+                    chat: `${user.name} 님이 들어왔습니다.`,
+                    user: {id: null, name: "system"},
+                };
+                io.emit("message", welcomeMessage);
                 cb({ok:true,data:user});
             } catch (error) {
                 cb({ok:false, error:error.message});
@@ -17,7 +22,7 @@ module.exports=function(io){
             
         });
 
-        socket.on("sendMessage",()=>async(message,cb)=>{
+        socket.on("sendMessage", async(message,cb)=>{
             try {
                //socket ID로 유저 찾기
                 const user = await userController.checkUser(socket.id);
